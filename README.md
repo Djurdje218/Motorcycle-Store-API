@@ -1,3 +1,6 @@
+![Screenshot 2024-10-15 171752](https://github.com/user-attachments/assets/4cef5779-a9c2-4656-91c1-48d9b4daad20)
+
+
 # Swagger generated server
 
 ## Overview
