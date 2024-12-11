@@ -1,4 +1,3 @@
-![Screenshot 2024-10-15 171752](https://github.com/user-attachments/assets/4cef5779-a9c2-4656-91c1-48d9b4daad20)
 
 
 # Swagger generated server
@@ -17,7 +16,14 @@ Python 3.5.2+
 To run the server, please execute the following from the root directory:
 
 ```
-pip3 install -r requirements.txt
+python3 -m venv .venv
+
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+pip install 'connexion[swagger-ui]<3.0'
+
 python3 -m swagger_server
 ```
 
@@ -27,21 +33,21 @@ and open your browser to here:
 http://localhost:8080/ui/
 ```
 
-Your Swagger definition lives here:
-
+Loki:
 ```
-http://localhost:8080/swagger.json
-```
-
-To launch the integration tests, use tox:
-```
-sudo pip install tox
-tox
+./loki-linux-amd64 -config.file=loki-local-config.yaml
 ```
 
-## Running with Docker
+Prometheus:
 
-To run the server on a Docker container, please execute the following from the root directory:
+```
+./promtail-linux-amd64 -config.file=promtail-local-config.yaml
+```
+
+Grafana:
+```
+docker run -d -p 3000:3000 --network host --name=grafana grafana/grafana
+```
 
 ```bash
 # building the image
@@ -50,3 +56,5 @@ docker build -t swagger_server .
 # starting up a container
 docker run -p 8080:8080 swagger_server
 ```
+
+![Screenshot 2024-10-15 171752](https://github.com/user-attachments/assets/4cef5779-a9c2-4656-91c1-48d9b4daad20)
