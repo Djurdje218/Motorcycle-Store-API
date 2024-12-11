@@ -4,6 +4,7 @@ import time
 from swagger_server.models.motorcycle import Motorcycle  # noqa: E501
 from swagger_server import util
 from swagger_server.metrics import *
+from swagger_server.logger import logger
 
 
 def record_metrics(method, endpoint):
@@ -26,14 +27,17 @@ motorcycles = [
 ]
 
 def motorcycles_get():  # noqa: E501
-
+    logger.info("Try GET /motorcycles")
     observer = record_metrics("GET", "/motorcycles")
     try:
+        logger.info("GET /motorcycles endpoint accessed")
         observer(status_code="200")
         return "GET query success!"
     except Exception as e:
         observer(status_code="500")
         ERROR_COUNT.labels(method="GET", endpoint="/motorcycles").inc()
+        logger.error(f"Error in GET /motorcycles: {str(e)}")
+        return {"error": "Something went wrong"}, 500
    
     return motorcycles, 200
 
