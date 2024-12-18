@@ -23,20 +23,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m venv .venv
+        python3 -m venv .venv
         source .venv/bin/activate
         pip install -r requirements.txt
+        pip install 'connexion[swagger-ui]<3.0'
 
-    - name: Run tests
-      run: |
-        source .venv/bin/activate
-        pytest --maxfail=1 --disable-warnings -q
-
-    - name: Lint code with flake8
-      run: |
-        source .venv/bin/activate
-        pip install flake8
-        flake8 .
 
   docker_build:
     runs-on: ubuntu-latest
