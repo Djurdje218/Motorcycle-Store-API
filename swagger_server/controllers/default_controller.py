@@ -1,11 +1,14 @@
 import connexion
 import six
 import time
+import random
 from swagger_server.models.motorcycle import Motorcycle  # noqa: E501
 from swagger_server import util
 from swagger_server.metrics import *
 from swagger_server.logger import logger
-
+from opentelemetry import trace
+from swagger_server.controllers.tracing import tracer
+from flask import request
 
 def record_metrics(method, endpoint):
     REQUEST_COUNT.labels(method=method, endpoint=endpoint).inc()
@@ -27,19 +30,27 @@ motorcycles = [
 ]
 
 def motorcycles_get():  # noqa: E501
-    logger.info("Try GET /motorcycles")
     observer = record_metrics("GET", "/motorcycles")
-    try:
-        logger.info("GET /motorcycles endpoint accessed")
-        observer(status_code="200")
-        return "GET query success!"
-    except Exception as e:
-        observer(status_code="500")
-        ERROR_COUNT.labels(method="GET", endpoint="/motorcycles").inc()
-        logger.error(f"Error in GET /motorcycles: {str(e)}")
-        return {"error": "Something went wrong"}, 500
-   
-    return motorcycles, 200
+    with tracer.start_as_current_span("motorcycles_get") as span:
+        try:
+            logger.info("GET /motorcycles endpoint accessed")
+            span.set_attribute("http.method", "GET")
+            span.set_attribute("http.route", "/motorcycles")
+
+            # Simulate processing delay
+            delay = random.uniform(0.1, 2.0)
+            time.sleep(delay)
+            span.set_attribute("processing.delay", delay)
+
+            observer(status_code="200")
+            span.set_status(trace.Status(trace.StatusCode.OK))
+            return motorcycles, 200
+        except Exception as e:
+            span.record_exception(e)
+            span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
+            observer(status_code="500")
+            logger.error(f"Failed to process the GET query: {str(e)}")
+            return {"error": "Something went wrong"}, 500
 
 
 def motorcycles_id_delete(id_):  # noqa: E501
