@@ -17,7 +17,10 @@ Python 3.5.2+
 To run the server, please execute the following from the root directory:
 
 ```
-pip3 install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install 'connexion[swagger-ui]<3.0'
 python3 -m swagger_server
 ```
 
@@ -39,6 +42,25 @@ sudo pip install tox
 tox
 ```
 
+To launch Garfana
+```
+docker run -d -p 3000:3000 --network host --name=grafana grafana/grafana
+
+```
+
+To launch Jaeger 
+```
+sudo docker run -d --name jaeger \
+  -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
+  -p 5775:5775/udp \
+  -p 6831:6831/udp \
+  -p 6832:6832/udp \
+  -p 5778:5778 \
+  -p 16686:16686 \
+  -p 14268:14268 \
+  -p 9411:9411 \
+  jaegertracing/all-in-one:1.6.0
+```
 ## Running with Docker
 
 To run the server on a Docker container, please execute the following from the root directory:
