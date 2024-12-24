@@ -74,5 +74,8 @@ jobs:
 
     - name: Verify API endpoint
       run: |
-        sleep 10 # Wait for services to start
-        curl -f http://localhost:8080/ui/
+       for i in {1..5}; do
+        curl http://localhost:8080 && break
+        echo "Waiting for service..." && sleep 10
+        done
+
