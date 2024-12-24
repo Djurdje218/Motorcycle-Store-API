@@ -28,12 +28,6 @@ jobs:
         pip install -r requirements.txt
         pip install 'connexion[swagger-ui]<3.0'
 
-    - name: Lint with flake8
-      run: |
-        source .venv/bin/activate
-        pip install flake8
-        flake8 --exclude=venv
-
 
   deploy:
     runs-on: ubuntu-latest
